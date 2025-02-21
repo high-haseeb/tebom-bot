@@ -2,18 +2,10 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 
 import { useTranslations } from "next-intl";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
     Form,
@@ -24,28 +16,25 @@ import {
     FormLabel,
     FormMessage
 } from "./ui/form";
-import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
+
 import { cn } from "@/lib/utils";
 import { CalendarIcon, SearchCheckIcon } from "lucide-react";
 import { formatDate } from "date-fns";
-import { Switch } from "@/components/ui/switch";
 
 
 export default function EntryForm() {
     const t = useTranslations("form");
 
     const FormSchema = z.object({
-        licensePlateNumber: z.string()
-            .min(1, "Seri numarası zorunludur.")
-            .regex(/^[A-Z]{2,3}\d{6}$/, t("errors.invalid_license")),
+        licensePlateNumber: z.string().regex(/^[A-Z]{2,3}\d{6}$/, t("errors.invalid_license")),
 
-        licenseSerialNumber: z.string()
-            .min(1, "Seri numarası zorunludur.")
-            .regex(/^[A-Z]{2,3}\d{6}$/, "Geçerli bir seri numarası girin (örn: AB123456 veya ABC123456)."),
+        licenseSerialNumber: z.string().min(0, t("errors.invalid_serial")),
 
         dob: z.date(),
         trIdOrTaxNumber: z.string()
-            .min(1, "TR ID Number / Tax Number is required."),
+            .length(11, t("errors.invalid_id")),
 
         profession: z.string().min(1, "Profession is required."),
 
@@ -63,8 +52,8 @@ export default function EntryForm() {
         defaultValues: {
             licensePlateNumber: "",
             licenseSerialNumber: "",
-            dob: new Date(),
             trIdOrTaxNumber: "",
+            dob: new Date(),
             isPawnBrokers: true,
             isDisabilityCar: false,
         },
@@ -79,6 +68,7 @@ export default function EntryForm() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
                 <LicensePlateInput />
                 <LicenseSerialNumberInput />
+                <IdNumberInput />
                 <BrithdayInput />
                 <DisabilityInput />
                 <Button type="submit">submit</Button>
@@ -99,7 +89,7 @@ const DisabilityInput = () => {
                 <FormItem className="flex flex-row items-center justify-between rounded-lg">
                     <div className="space-y-0.5">
                         <FormLabel className="text-base">
-                            { t("disability_car") }
+                            {t("disability_car")}
                         </FormLabel>
                     </div>
                     <FormControl>
@@ -127,8 +117,27 @@ const LicensePlateInput = () => {
                     <FormControl>
                         <div className="flex gap-2 items-center justify-center">
                             <Input placeholder="12 ABC345" {...field} />
-                            <Button size={'sm'}><SearchCheckIcon /></Button>
+                            <Button size={'sm'} onClick={(e) => e.preventDefault()}><SearchCheckIcon /></Button>
                         </div>
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+            )} />
+    )
+}
+
+const IdNumberInput = () => {
+    const t = useTranslations("form");
+    const form = useForm();
+    return (
+        <FormField
+            control={form.control}
+            name="trIdOrTaxNumber"
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>{t("id_number")}</FormLabel>
+                    <FormControl>
+                        <Input placeholder={t("id_number")} {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -147,7 +156,7 @@ const LicenseSerialNumberInput = () => {
                 <FormItem>
                     <FormLabel>{t("serial_number.label")}</FormLabel>
                     <FormControl>
-                        <Input placeholder={t("serial_number.placeholder")} type="number" {...field} />
+                        <Input placeholder={t("serial_number.placeholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -183,11 +192,12 @@ const BrithdayInput = () => {
                                 </Button>
                             </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="center">
+                    <PopoverContent className="w-auto p-0">
                             <Calendar
                                 mode="single"
                                 selected={field.value}
                                 onSelect={field.onChange}
+                                initialFocus
                             />
                         </PopoverContent>
                     </Popover>
