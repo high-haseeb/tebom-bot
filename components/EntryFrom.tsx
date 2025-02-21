@@ -71,7 +71,7 @@ export default function EntryForm() {
                 <IdNumberInput />
                 <BrithdayInput />
                 <DisabilityInput />
-                <Button type="submit">submit</Button>
+                <Button type="submit">{ t("submit") }</Button>
             </form>
         </Form>
     );

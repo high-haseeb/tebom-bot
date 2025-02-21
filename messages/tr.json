@@ -34,7 +34,7 @@
                 "imm": "IMM"
             }
         },
-        "submit": "Gönder",
+        "submit": "Bilgileri Doğrula",
         "errors": {
             "required": "Bu alan zorunludur.",
             "invalid_license": "Geçersiz lisans numarası formatı.",

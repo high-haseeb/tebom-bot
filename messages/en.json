@@ -33,7 +33,7 @@
                 "imm": "IMM"
             }
         },
-        "submit": "Submit",
+        "submit": "verify information",
         "errors": {
             "required": "This field is required.",
             "invalid_license": "Invalid license number format.",
