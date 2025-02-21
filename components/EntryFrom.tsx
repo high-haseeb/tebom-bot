@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/select";
 
 import { useTranslations } from "next-intl";
-import Agreement from "./Agreement";
 import { Calendar } from "@/components/ui/calendar";
 import {
     Form,
@@ -29,6 +28,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover
 import { cn } from "@/lib/utils";
 import { CalendarIcon, SearchCheckIcon } from "lucide-react";
 import { formatDate } from "date-fns";
+import { Switch } from "@/components/ui/switch";
 
 
 export default function EntryForm() {
@@ -80,12 +80,38 @@ export default function EntryForm() {
                 <LicensePlateInput />
                 <LicenseSerialNumberInput />
                 <BrithdayInput />
+                <DisabilityInput />
                 <Button type="submit">submit</Button>
-                <Agreement />
             </form>
         </Form>
     );
 
+}
+
+const DisabilityInput = () => {
+    const t = useTranslations("form");
+    const form = useForm();
+    return (
+        <FormField
+            control={form.control}
+            name="isDisabilityCar"
+            render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg">
+                    <div className="space-y-0.5">
+                        <FormLabel className="text-base">
+                            { t("disability_car") }
+                        </FormLabel>
+                    </div>
+                    <FormControl>
+                        <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                        />
+                    </FormControl>
+                </FormItem>
+            )}
+        />
+    )
 }
 
 const LicensePlateInput = () => {

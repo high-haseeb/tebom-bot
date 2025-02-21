@@ -1,14 +1,20 @@
 {
+    "form_tabs": {
+        "old_plate": "Plakam Var",
+        "new_plate": "Yeni Plaka (YK)",
+        "old_title": "Trafik Sigortası Hızlı Teklif",
+        "new_title": "Trafik Sigortası Hızlı Teklif"
+    },
     "form": {
         "license_number": {
-            "label": "Lisans Numarası",
+            "label": "Araç Plakası",
             "placeholder": "Lisans numarasını girin"
         },
         "serial_number": {
-            "label": "Seri Numarası",
-            "placeholder": "Seri numarasını girin"
+            "label": "Ruhsat Belge / Seri No",
+            "placeholder": "Ruhsat Belge / Seri No"
         },
-        "id_number": "Kimlik Numarası",
+        "id_number": "Tc Kimlik No / V.K.No",
         "profession": {
             "label": "Meslek",
             "placeholder": "Bir meslek seçin",
@@ -19,7 +25,7 @@
             }
         },
         "pawn_broker": "Rehin Aracı",
-        "disability_car": "Engelli Aracı",
+        "disability_car": "Engelli Aracı mı?",
         "insurance": {
             "label": "Sigorta Türü",
             "placeholder": "Sigorta türü seçin",

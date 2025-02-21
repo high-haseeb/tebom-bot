@@ -1,4 +1,10 @@
 {
+    "form_tabs": {
+        "old_plate": "old plate",
+        "new_plate": "new plate",
+        "old_title": "Traffic Quick Offer",
+        "new_title": "Traffic Quick Offer"
+    },
     "form": {
         "license_number": {
             "label": "License Number"
@@ -18,7 +24,7 @@
             }
         },
         "pawn_broker": "Pawn Broker",
-        "disability_car": "Disability Car",
+        "disability_car": "Is disability car?",
         "insurance": {
             "label": "Insurance Type",
             "placeholder": "Select insurance type",

@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale, getMessages } from 'next-intl/server';
+import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
     title: "Insurance Bot",
@@ -18,7 +19,14 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     return (
         <html lang="en">
             <body className={`${inter.variable} antialiased`} >
-                <NextIntlClientProvider locale={locale} messages={messages}>{children}</NextIntlClientProvider>
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    <NextIntlClientProvider locale={locale} messages={messages}>{children}</NextIntlClientProvider>
+                </ThemeProvider>
             </body>
         </html>
     );
