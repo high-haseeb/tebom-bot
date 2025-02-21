@@ -1,0 +1,47 @@
+{
+    "form": {
+        "license_number": {
+            "label": "Lisans Numarası",
+            "placeholder": "Lisans numarasını girin"
+        },
+        "serial_number": {
+            "label": "Seri Numarası",
+            "placeholder": "Seri numarasını girin"
+        },
+        "id_number": "Kimlik Numarası",
+        "profession": {
+            "label": "Meslek",
+            "placeholder": "Bir meslek seçin",
+            "options": {
+                "engineer": "Mühendis",
+                "doctor": "Doktor",
+                "teacher": "Öğretmen"
+            }
+        },
+        "pawn_broker": "Rehin Aracı",
+        "disability_car": "Engelli Aracı",
+        "insurance": {
+            "label": "Sigorta Türü",
+            "placeholder": "Sigorta türü seçin",
+            "options": {
+                "tss": "TSS",
+                "imm": "IMM"
+            }
+        },
+        "submit": "Gönder",
+        "errors": {
+            "required": "Bu alan zorunludur.",
+            "invalid_license": "Geçersiz lisans numarası formatı.",
+            "invalid_serial": "Geçersiz seri numarası formatı.",
+            "invalid_id": "Kimlik numarası yalnızca rakamlardan oluşmalıdır.",
+            "invalid_profession": "Lütfen bir meslek seçin.",
+            "invalid_insurance": "Lütfen bir sigorta türü seçin."
+        }
+    },
+    "agreement": {
+        "text": "Devam ederek <info></info>, <privacy></privacy> ve <user></user> kabul etmiş olursunuz.",
+        "info": "Bilgilendirme Politikası",
+        "privacy": "Gizlilik Politikası",
+        "user": "Kullanıcı Sözleşmesi"
+    }
+}

@@ -1,0 +1,46 @@
+{
+    "form": {
+        "license_number": {
+            "label": "License Number"
+        },
+        "serial_number": {
+            "label": "Serial Number",
+            "placeholder": "Enter serial number"
+        },
+        "id_number": "ID Number",
+        "profession": {
+            "label": "Profession",
+            "placeholder": "Select a profession",
+            "options": {
+                "engineer": "Engineer",
+                "doctor": "Doctor",
+                "teacher": "Teacher"
+            }
+        },
+        "pawn_broker": "Pawn Broker",
+        "disability_car": "Disability Car",
+        "insurance": {
+            "label": "Insurance Type",
+            "placeholder": "Select insurance type",
+            "options": {
+                "tss": "TSS",
+                "imm": "IMM"
+            }
+        },
+        "submit": "Submit",
+        "errors": {
+            "required": "This field is required.",
+            "invalid_license": "Invalid license number format.",
+            "invalid_serial": "Invalid serial number format.",
+            "invalid_id": "ID number must be numeric.",
+            "invalid_profession": "Please select a profession.",
+            "invalid_insurance": "Please select an insurance type."
+        }
+    },
+    "agreement": {
+        "text": "By proceeding, you agree to our <info>info</info>, <privacy></privacy>, and <user></user>.",
+        "info": "Information Policy",
+        "privacy": "Privacy Policy",
+        "user": "User Agreement"
+    }
+}
