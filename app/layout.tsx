@@ -17,7 +17,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     const locale = await getLocale();
     const messages = await getMessages();
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <body className={`${inter.variable} antialiased`} >
                 <ThemeProvider
                     attribute="class"

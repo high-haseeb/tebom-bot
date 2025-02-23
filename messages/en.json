@@ -38,7 +38,10 @@
             "required": "This field is required.",
             "invalid_license": "Invalid license number format.",
             "invalid_serial": "Invalid serial number format.",
-            "invalid_id": "ID number must be numeric.",
+            "invalid_id": {
+                "short_length": "The ID must be 11 digits",
+                "not_numeric": "The ID must be all digits"
+            },
             "invalid_profession": "Please select a profession.",
             "invalid_insurance": "Please select an insurance type."
         }
