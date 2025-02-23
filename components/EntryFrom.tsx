@@ -3,7 +3,7 @@ import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
-import { CalendarIcon, SearchCheckIcon } from "lucide-react";
+import { CalendarIcon, LoaderIcon, SearchCheckIcon } from "lucide-react";
 import { formatDate } from "date-fns";
 import InputMask from "react-input-mask-next";
 
@@ -26,28 +26,36 @@ import {
     PopoverContent,
     PopoverTrigger
 } from "@/components/ui/popover";
-import { isPlateValid } from "@/api/getInfo";
 import { useState } from "react";
 import { useTrafficInfoStore } from "./CarInformation";
 import { useTrafficQueryStore } from "@/stores/trafficStore";
+import { startOfferProcess } from "@/api/getInfo";
 
 
 type FormValues = {
     licensePlateNumber: string;
     licenseSerialNumber: string;
     trIdOrTaxNumber: string;
-    dob: Date;
-    isDisabilityCar: boolean;
-    phoneNumber: string;
 };
 
 const FormSchema = z.object({
-    licensePlateNumber: z.string(),
-    licenseSerialNumber: z.string(),
-    trIdOrTaxNumber: z.string(),
-    dob: z.date({ required_error: "Date of birth is required" }),
-    isDisabilityCar: z.boolean(),
-    phoneNumber: z.string(),
+    licensePlateNumber: z.string()
+        .regex(/^\d{2}[A-Z]{1,3}\d{2,4}$/, "Invalid Turkish license plate format")
+        .min(1, "Please make sure the license plate number is correct"),
+
+    licenseSerialNumber: z.string()
+        .regex(/^[A-Z0-9]+$/, "License serial number must be alphanumeric"),
+
+    trIdOrTaxNumber: z.string()
+        .length(11, "ID number must be exactly 11 digits")
+        .regex(/^\d+$/, "ID number must contain only numbers"),
+
+    // dob: z.date({ required_error: "Date of birth is required" }),
+    //
+    // isDisabilityCar: z.boolean(),
+
+    // phoneNumber: z.string()
+    //     .regex(/^5\d{2} \d{3} \d{2} \d{2}$/, "Phone number must be in the format: 5XX XXX XX XX"),
 });
 
 export default function EntryForm() {
@@ -59,15 +67,18 @@ export default function EntryForm() {
             licensePlateNumber: "",
             licenseSerialNumber: "",
             trIdOrTaxNumber: "",
-            dob: new Date(),
-            isDisabilityCar: false,
-            phoneNumber: "",
+            // dob: new Date(),
+            // isDisabilityCar: false,
+            // phoneNumber: "",
         },
     });
 
-    const { setData, data } = useTrafficInfoStore();
+    const { setData } = useTrafficInfoStore();
     const { setResponses } = useTrafficQueryStore();
+    const [loading, setLoading] = useState(false);
+
     const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
+        setLoading(true);
         const requestData = {
             Calisilanfirma: "6cc33e04-badc-4a24-adab-75802596cce0",
             Calisilansube: "a82d67ae-596d-40e8-8077-0accd3dbcd88",
@@ -79,7 +90,7 @@ export default function EntryForm() {
             LicensePlateNumber: formData.licensePlateNumber,
             LicensePermitNumber: formData.licenseSerialNumber,
             Phone: "505 365 09 98",
-            IsDisabled: formData.isDisabilityCar,
+            IsDisabled: false,
 
             EMail: "abcd123@gmail.com",
             HaveLicensePermitNumber: true,
@@ -101,20 +112,35 @@ export default function EntryForm() {
         });
 
         const result = await response.json();
-        const guid = result.data.HeaderGuid;
         setData(result.data);
-        {
-            const response = await fetch("http://localhost:6969/getOffers", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ guid: guid })
-            });
-            const body = await response.json();
-            console.log(body);
-            setResponses(body.data);
+        await startOfferProcess(result.data);
+        
+        async function fetchOffersWithRetry(guid: string, retries = 5, delay = 10000) {
+            for (let i = 0; i < retries; i++) {
+                const response = await fetch("http://localhost:6969/getOffers", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ guid }),
+                });
+
+                const body = await response.json();
+                console.log(body);
+
+                if (body.status === false && body.message.includes("Teklif çalışma süresi henüz bitmemiştir")) {
+                    console.log(`Waiting ${delay / 1000} seconds before retrying...`);
+                    await new Promise((resolve) => setTimeout(resolve, delay));
+                } else {
+                    setResponses(body.data);
+                    return; // Exit function on success
+                }
+            }
+
+            console.error("Max retries reached, request failed.");
         }
+        fetchOffersWithRetry(result.data.HeaderGuid, 10);
+        setLoading(false);
     };
 
     return (
@@ -126,74 +152,20 @@ export default function EntryForm() {
                 {/* <BrithdayInput form={form} /> */}
                 {/* <DisabilityInput form={form} /> */}
                 {/* <PhoneNumberInput form={form} /> */}
-                <Button type="submit">{t("submit")}</Button>
+                <Button type="submit" disabled={loading}>
+                    {
+                        loading ?
+                            <LoaderIcon className="animate-spin" />
+                            :
+                            t("submit")
+                    }
+                </Button>
             </form>
         </Form>
     );
 
 }
 
-const DisabilityInput = ({ form }: { form: UseFormReturn<FormValues> }) => {
-    const t = useTranslations("form");
-
-    return (
-        <FormField
-            control={form.control}
-            name="isDisabilityCar"
-            render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg">
-                    <div className="space-y-0.5">
-                        <FormLabel className="text-base">
-                            {t("disability_car")}
-                        </FormLabel>
-                    </div>
-                    <FormControl>
-                        <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                        />
-                    </FormControl>
-                </FormItem>
-            )}
-        />
-    )
-}
-
-const formatPhoneNumber = (value: string) => {
-    // Remove all non-numeric characters
-    const numbers = value.replace(/\D/g, "");
-
-    // Ensure it starts with "5" (Turkish mobile numbers)
-    if (!numbers.startsWith("5")) return "";
-
-    // Apply formatting
-    return numbers
-        .replace(/(\d{3})(\d{3})(\d{2})(\d{2})/, "+90 $1 $2 $3 $4")
-        .slice(0, 16); // Keep max length
-};
-
-const PhoneNumberInput = ({ form }: { form: UseFormReturn<FormValues> }) => {
-
-    return (
-        <FormField
-            control={form.control}
-            name="phoneNumber"
-            render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                        <Input
-                            placeholder="+90 5XX XXX XX XX"
-                            value={field.value}
-                            onChange={(e) => field.onChange(formatPhoneNumber(e.target.value))}
-                        />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
-    );
-};
 
 const LicensePlateInput = ({ form }: { form: UseFormReturn<FormValues> }) => {
     const t = useTranslations("form");
@@ -205,10 +177,7 @@ const LicensePlateInput = ({ form }: { form: UseFormReturn<FormValues> }) => {
             name="licensePlateNumber"
             render={({ field }) => {
 
-                const handlePlateIsValid = async () => {
-                    const response = await isPlateValid(field.value);
-                    setIsValid(response.data);
-                }
+                const handlePlateIsValid = async () => { }
 
                 return (
                     <FormItem>
@@ -273,43 +242,43 @@ const LicenseSerialNumberInput = ({ form }: { form: UseFormReturn<FormValues> })
     )
 }
 
-const BrithdayInput = ({ form }: { form: UseFormReturn<FormValues> }) => {
-    return (
-        <FormField
-            control={form.control}
-            name="dob"
-            render={({ field }) => (
-                <FormItem className="flex flex-col">
-                    <FormLabel>Date of birth</FormLabel>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <FormControl>
-                                <Button
-                                    variant={"outline"}
-                                    className={cn(
-                                        "w-full pl-3 text-left font-normal",
-                                        !field.value && "text-muted-foreground"
-                                    )}
-                                >
-                                    {field.value ? (
-                                        formatDate(field.value, "PPP")
-                                    ) : (
-                                        <span>Pick a date</span>
-                                    )}
-                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                            </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                            <Calendar
-                                mode="single"
-                                selected={field.value}
-                                onSelect={field.onChange}
-                            />
-                        </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                </FormItem>
-            )} />
-    )
-}
+// const BrithdayInput = ({ form }: { form: UseFormReturn<FormValues> }) => {
+//     return (
+//         <FormField
+//             control={form.control}
+//             name="dob"
+//             render={({ field }) => (
+//                 <FormItem className="flex flex-col">
+//                     <FormLabel>Date of birth</FormLabel>
+//                     <Popover>
+//                         <PopoverTrigger asChild>
+//                             <FormControl>
+//                                 <Button
+//                                     variant={"outline"}
+//                                     className={cn(
+//                                         "w-full pl-3 text-left font-normal",
+//                                         !field.value && "text-muted-foreground"
+//                                     )}
+//                                 >
+//                                     {field.value ? (
+//                                         formatDate(field.value, "PPP")
+//                                     ) : (
+//                                         <span>Pick a date</span>
+//                                     )}
+//                                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+//                                 </Button>
+//                             </FormControl>
+//                         </PopoverTrigger>
+//                         <PopoverContent className="w-auto p-0">
+//                             <Calendar
+//                                 mode="single"
+//                                 selected={field.value}
+//                                 onSelect={field.onChange}
+//                             />
+//                         </PopoverContent>
+//                     </Popover>
+//                     <FormMessage />
+//                 </FormItem>
+//             )} />
+//     )
+// }

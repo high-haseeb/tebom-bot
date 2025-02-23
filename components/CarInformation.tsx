@@ -1,23 +1,39 @@
 import React, { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { create } from "zustand";
+import { LoaderIcon } from "lucide-react";
 
-interface TrafficInfo {
+interface SpecInformation {
+    "PreviousAgencyCode": string,
+    "PreviousPolicyNumber": string,
+    "PreviousIsCancel": boolean,
+    "DamageCount": string,
+    "DamagelessLevel": string,
+    "UsingType": string,
+    "VehicleType": string,
+    "VehicleTypeName": string;
+}
+
+export interface TrafficInfo {
     HeaderGuid: string;
     BirthDate: string;
     BrandCode: string;
     BrandName: string;
     LicensePlateNumber: string;
     ModelName: string;
-    ModelYear: number;
+    ModelCode: string;
+    ModelYear: string;
     FuelTypeName: string;
+    FuelType: string;
     ColorName: string;
+    ColorCode: string;
     CustomerName: string;
     CustomerSurname: string;
     NationalNumber: string;
     TrafficRegistrationDate: string;
     PolicyStartDate: string;
     PolicyEndDate: string;
+    CascoSpecInformation: SpecInformation;
 }
 
 interface TrafficInfoStore {
@@ -33,7 +49,8 @@ export const useTrafficInfoStore = create<TrafficInfoStore>((set) => ({
 const TrafficInfoDisplay: React.FC = () => {
     const data = useTrafficInfoStore((state) => state.data);
 
-    if (!data) return <p>Loading...</p>;
+    if (!data) return null;
+    {/* <div><LoaderIcon className="animate-spin" /></div> */ }
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
@@ -42,6 +59,7 @@ const TrafficInfoDisplay: React.FC = () => {
                     <CardTitle>Vehicle Information</CardTitle>
                 </CardHeader>
                 <CardContent>
+                    <img src={`https://portal.acente365.com/Images/CarBrand/${data.BrandCode}.png`} />
                     <p><strong>Brand:</strong> {data.BrandName} ({data.BrandCode})</p>
                     <p><strong>Model:</strong> {data.ModelName} ({data.ModelYear})</p>
                     <p><strong>License Plate:</strong> {data.LicensePlateNumber}</p>

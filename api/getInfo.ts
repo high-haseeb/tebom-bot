@@ -1,15 +1,32 @@
-export const isPlateValid = async (plateNumber: string) => {
-    const url = "http://localhost:6969";
-    const response = await fetch(url, {
-        "body": JSON.stringify({
-            plateNumber: plateNumber,
-        }),
-        "method": "POST",
-    });
+import { TrafficInfo } from "@/components/CarInformation";
 
-    const body = await response.json();
-    console.log(body);
-    return body;
+export const startOfferProcess = async (data: TrafficInfo) => {
+    const body = {
+        BrandCodeFull: `${data.BrandCode}${data.ModelCode}`,
+        UsingType: data.CascoSpecInformation.UsingType.toString(),
+        BuildYear: data.ModelYear.toString(),
+        FuelType: data.FuelType.toString() ?? "3",
+        ColorCode: data.ColorCode.toString(),
+        IsRenewalPeriodTraffic: "true",
+        ContinueWithoutOldPolicyInfo: "true",
+        HeaderGuid: data.HeaderGuid,
+        VehicleTypeTraffic: data.CascoSpecInformation.VehicleType.toString(),
+        Branch: "1",
+        QueryType: "trafik",
+        TestQueue: "false",
+    };
+    console.log(body)
+
+    try {
+        const response = await fetch("http://localhost:6969/startOfferList", {
+            method: "POST",
+            body: JSON.stringify(body)
+        });
+        const responseBody = await response.json();
+        console.log(responseBody);
+    } catch (e) {
+        console.log(e);
+    }
 }
 
 type TrafficInformation = {
