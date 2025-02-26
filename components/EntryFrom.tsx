@@ -2,16 +2,11 @@
 import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { cn } from "@/lib/utils";
-import { CalendarIcon, LoaderIcon, SearchCheckIcon } from "lucide-react";
-import { formatDate } from "date-fns";
-import InputMask from "react-input-mask-next";
+import {  LoaderIcon, SearchCheckIcon } from "lucide-react";
 
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Switch } from "@/components/ui/switch";
 import {
     Form,
     FormControl,
@@ -30,7 +25,7 @@ import { useState } from "react";
 import { useTrafficInfoStore } from "./CarInformation";
 import { useTrafficQueryStore } from "@/stores/trafficStore";
 import { startOfferProcess } from "@/api/getInfo";
-
+import { toast } from "sonner";
 
 type FormValues = {
     licensePlateNumber: string;
@@ -39,12 +34,12 @@ type FormValues = {
 };
 
 const FormSchema = z.object({
-    licensePlateNumber: z.string()
-        .regex(/^\d{2}[A-Z]{1,3}\d{2,4}$/, "Invalid Turkish license plate format")
-        .min(1, "Please make sure the license plate number is correct"),
+    licensePlateNumber: z.string(),
+    // .regex(/^\d{2}[A-Z]{1,3}\d{2,4}$/, "Invalid Turkish license plate format")
+    // .min(1, "Please make sure the license plate number is correct"),
 
-    licenseSerialNumber: z.string()
-        .regex(/^[A-Z0-9]+$/, "License serial number must be alphanumeric"),
+    licenseSerialNumber: z.string(),
+    // .regex(/^[A-Z0-9]+$/, "License serial number must be alphanumeric"),
 
     trIdOrTaxNumber: z.string()
         .length(11, "ID number must be exactly 11 digits")
@@ -78,6 +73,7 @@ export default function EntryForm() {
     const [loading, setLoading] = useState(false);
 
     const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
+        toast("Fetching Offers");
         setLoading(true);
         const requestData = {
             Calisilanfirma: "6cc33e04-badc-4a24-adab-75802596cce0",
@@ -103,21 +99,9 @@ export default function EntryForm() {
             MortgageeFinancerCode: ""
         };
 
-        const response = await fetch("http://localhost:6969/getTrafficInfo", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestData),
-        });
-
-        const result = await response.json();
-        setData(result.data);
-        await startOfferProcess(result.data);
-        
         async function fetchOffersWithRetry(guid: string, retries = 5, delay = 10000) {
             for (let i = 0; i < retries; i++) {
-                const response = await fetch("http://localhost:6969/getOffers", {
+                const response = await fetch("http://localhost:4040/getOffers", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -139,8 +123,28 @@ export default function EntryForm() {
 
             console.error("Max retries reached, request failed.");
         }
-        fetchOffersWithRetry(result.data.HeaderGuid, 10);
-        setLoading(false);
+
+        try {
+            const response = await fetch("http://localhost:4040/getTrafficInfo", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestData),
+            });
+
+            const result = await response.json();
+            console.log(result)
+            setData(result.data);
+            await startOfferProcess(result.data);
+            fetchOffersWithRetry(result.data.HeaderGuid, 10);
+        } catch (error : any) {
+            toast("Error");
+            console.log(error);
+            setLoading(false);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

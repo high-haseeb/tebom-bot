@@ -18,7 +18,7 @@ export const startOfferProcess = async (data: TrafficInfo) => {
     console.log(body)
 
     try {
-        const response = await fetch("http://localhost:6969/startOfferList", {
+        const response = await fetch("http://localhost:4040/startOfferList", {
             method: "POST",
             body: JSON.stringify(body)
         });
@@ -48,7 +48,7 @@ type TrafficInformation = {
 }
 
 export const getTrafficInformation = async () => {
-    const url = "http://localhost:6969/getTrafficInfo";
+    const url = "http://localhost:4040/getTrafficInfo";
     const requestData = {
         Calisilanfirma: "6cc33e04-badc-4a24-adab-75802596cce0",
         Calisilansube: "a82d67ae-596d-40e8-8077-0accd3dbcd88",
@@ -85,7 +85,7 @@ export const getTrafficInformation = async () => {
 };
 
 export async function getListOffers() {
-    const response = await fetch("http://localhost:6969/getOffers");
+    const response = await fetch("http://localhost:4040/getOffers");
     const body = await response.json();
     return body.data;
 }

@@ -53,18 +53,22 @@ const TrafficInfoDisplay: React.FC = () => {
     {/* <div><LoaderIcon className="animate-spin" /></div> */ }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+        <div className="flex flex-col">
             <Card>
                 <CardHeader>
                     <CardTitle>Vehicle Information</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <img src={`https://portal.acente365.com/Images/CarBrand/${data.BrandCode}.png`} />
-                    <p><strong>Brand:</strong> {data.BrandName} ({data.BrandCode})</p>
-                    <p><strong>Model:</strong> {data.ModelName} ({data.ModelYear})</p>
-                    <p><strong>License Plate:</strong> {data.LicensePlateNumber}</p>
-                    <p><strong>Fuel Type:</strong> {data.FuelTypeName}</p>
-                    <p><strong>Color:</strong> {data.ColorName}</p>
+                    <div className="flex">
+                        <img src={`https://portal.acente365.com/Images/CarBrand/${data.BrandCode}.png`} width={150}/>
+                        <div className="flex flex-col">
+                            <p><strong>Brand:</strong> {data.BrandName} ({data.BrandCode})</p>
+                            <p><strong>Model:</strong> {data.ModelName} ({data.ModelYear})</p>
+                            <p><strong>License Plate:</strong> {data.LicensePlateNumber}</p>
+                            <p><strong>Fuel Type:</strong> {data.FuelTypeName}</p>
+                            <p><strong>Color:</strong> {data.ColorName}</p>
+                        </div>
+                    </div>
                 </CardContent>
             </Card>
             <Card>
