@@ -40,7 +40,7 @@ const DownloadPDF = () => {
             }
 
             console.log(data.HeaderGuid.toString());
-            const response = await fetch("http://localhost:4040/getPDF", {
+            const response = await fetch("http://localhost:4040/get/PDF", {
                 method: "POST",
                 body: JSON.stringify({
                     type: "1",
