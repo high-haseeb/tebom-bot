@@ -13,7 +13,6 @@ import {
     NavigationMenuTrigger,
     navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
-import { ExternalLink, Link2 } from "lucide-react"
 
 const components: { title: string; href: string; description: string }[] =
     [
@@ -52,7 +51,7 @@ const components: { title: string; href: string; description: string }[] =
 
 export function NavigationBar() {
     return (
-        <NavigationMenu className="">
+        <NavigationMenu className="hidden lg:block">
             <NavigationMenuList>
                 <NavigationMenuItem>
                     <NavigationMenuTrigger>Getting started</NavigationMenuTrigger>

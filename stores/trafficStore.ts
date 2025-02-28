@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-type TrafficQueryResponse = {
+export type TrafficQueryResponse = {
     AdditionalPremiumDiscount: boolean;
     AvailableCampaigns: any[];
     BranchId: number;
@@ -57,9 +57,17 @@ type TrafficQueryStore = {
     setResponses: (newResponses: TrafficQueryResponse[]) => void;
     addResponse: (response: TrafficQueryResponse) => void;
     clearResponses: () => void;
+    loading: boolean;
+    setLoading: (laoding: boolean) => void;
+    loadingStarted: boolean;
+    setLoadingStarted: (loadingStarted: boolean) => void;
 };
 
 export const useTrafficQueryStore = create<TrafficQueryStore>((set) => ({
+    loading: false,
+    loadingStarted: false,
+    setLoadingStarted: (loadingStarted: boolean) => set({ loadingStarted }),
+    setLoading: (loading: boolean) => set({ loading }),
     responses: [],
     setResponses: (newResponses) => set({ responses: newResponses }),
     addResponse: (response) =>

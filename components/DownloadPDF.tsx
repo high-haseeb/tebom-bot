@@ -3,7 +3,6 @@ import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { DownloadIcon, LoaderIcon } from 'lucide-react'
 import { toast } from 'sonner'
-import { useTrafficQueryStore } from '@/stores/trafficStore';
 import { useTrafficInfoStore } from './CarInformation';
 
 const DownloadPDF = () => {
@@ -40,7 +39,7 @@ const DownloadPDF = () => {
             }
 
             console.log(data.HeaderGuid.toString());
-            const response = await fetch("http://localhost:4040/get/PDF", {
+            const response = await fetch("http://188.132.135.5:4040/get/PDF", {
                 method: "POST",
                 body: JSON.stringify({
                     type: "1",
@@ -51,15 +50,13 @@ const DownloadPDF = () => {
                 })
             });
             if (!response.ok) {
-                const body = await response.text();
-                toast(body);
+                const result = await response.json();
+                toast(result.message);
                 return;
             }
+            console.log(response)
             const responseJson = await response.json();
             downloadPDF(responseJson);
-        } catch (e: any) {
-            console.log(e);
-            toast("Error while ading the PDF");
         } finally {
             setLoading(false);
         }

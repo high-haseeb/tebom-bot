@@ -11,14 +11,12 @@ import {
 import Agreement from "@/components/Agreement";
 import EntryForm from "@/components/EntryFrom";
 import { useTranslations } from 'next-intl';
-import { useTrafficInfoStore } from './CarInformation';
 
 const MainForm = () => {
     const t = useTranslations("form_tabs");
-    const { data } = useTrafficInfoStore();
 
-    return data ? null : (
-        <Tabs defaultValue="old" className="w-[400px]">
+    return (
+        <Tabs defaultValue="old" className="lg:w-[400px] w-auto">
             <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="old">{t("old_plate")}</TabsTrigger>
                 <TabsTrigger value="new">{t("new_plate")}</TabsTrigger>
@@ -27,9 +25,9 @@ const MainForm = () => {
                 <Card>
                     <CardHeader>
                         <CardTitle>{t("old_title")}</CardTitle>
-                        <CardDescription>
-                            Get a quick offer for insurance of your car.
-                        </CardDescription>
+                        {/* <CardDescription> */}
+                        {/*     Get a quick offer for insurance of your car. */}
+                        {/* </CardDescription> */}
                     </CardHeader>
                     <CardContent className="space-y-2">
                         <EntryForm />
@@ -43,7 +41,7 @@ const MainForm = () => {
                 <Card>
                     <CardHeader>
                         <CardTitle>{t("new_title")}</CardTitle>
-                        <CardDescription>Get a quick offer for insurance of your car.</CardDescription>
+                        {/* <CardDescription>Get a quick offer for insurance of your car.</CardDescription> */}
                     </CardHeader>
                     <CardContent className="space-y-2">
                         <EntryForm />

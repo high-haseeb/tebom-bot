@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
-import { ChevronDown, ChevronsUpDown, SendIcon } from 'lucide-react';
+import { ChevronsUpDown, SendIcon } from 'lucide-react';
 import { Avatar, AvatarImage } from './ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -31,15 +31,15 @@ const ChatBot = () => {
     };
 
     return (
-        <Collapsible>
-            <Card className='max-w-80 w-80'>
+        <Collapsible className='w-full lg:w-80 lg:max-w-80'>
+            <Card className='w-full lg:w-80 lg:max-w-80'>
                 <CollapsibleTrigger asChild>
-                    <CardHeader className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground flex flex-row items-center justify-center gap-2 w-80">
+                    <CardHeader className="flex w-full flex-row items-center justify-center gap-4 lg:w-80">
                         <Avatar>
                             <AvatarImage src='dp.png' alt='bot DP'></AvatarImage>
                         </Avatar>
                         <div className="flex flex-col text-left text-sm leading-tight">
-                            <span className="truncate font-semibold">Bot</span>
+                            <span className="truncate font-semibold text-base">Bot</span>
                             <span className="truncate text-xs">Chat with our bot</span>
                         </div>
                         <ChevronsUpDown className='ml-auto' />
@@ -53,12 +53,12 @@ const ChatBot = () => {
                                 {messages.map((message, index) => (
                                     <div
                                         key={index}
-                                        className={`px-4 w-auto max-w-4/5 py-2 rounded-3xl text-wrap ${message.user === "bot" ? "bg-foreground text-background mr-4" : "self-end bg-primary text-background ml-4"}`}>
+                                        className={`max-w-4/5 ${message.user === "bot" ? "bg-foreground mr-4" : "self-end ml-4"} w-auto text-wrap rounded-3xl bg-primary px-4 py-2`}>
                                         {message.message}
                                     </div>
                                 ))}
                                 {isTyping && (
-                                    <div className="px-4 py-2 rounded-full w-auto bg-background text-foreground">
+                                    <div className="w-auto rounded-full bg-background px-4 py-2 text-foreground">
                                         Bot is typing...
                                     </div>
                                 )}

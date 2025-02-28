@@ -2,7 +2,7 @@
 import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {  LoaderIcon, SearchCheckIcon } from "lucide-react";
+import {  LoaderIcon } from "lucide-react";
 
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
@@ -10,17 +10,11 @@ import { Button } from "@/components/ui/button";
 import {
     Form,
     FormControl,
-    // FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage
 } from "./ui/form";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger
-} from "@/components/ui/popover";
 import { useState } from "react";
 import { useTrafficInfoStore } from "./CarInformation";
 import { useTrafficQueryStore } from "@/stores/trafficStore";
@@ -35,22 +29,10 @@ type FormValues = {
 
 const FormSchema = z.object({
     licensePlateNumber: z.string(),
-    // .regex(/^\d{2}[A-Z]{1,3}\d{2,4}$/, "Invalid Turkish license plate format")
-    // .min(1, "Please make sure the license plate number is correct"),
-
     licenseSerialNumber: z.string(),
-    // .regex(/^[A-Z0-9]+$/, "License serial number must be alphanumeric"),
-
     trIdOrTaxNumber: z.string()
         .length(11, "ID number must be exactly 11 digits")
         .regex(/^\d+$/, "ID number must contain only numbers"),
-
-    // dob: z.date({ required_error: "Date of birth is required" }),
-    //
-    // isDisabilityCar: z.boolean(),
-
-    // phoneNumber: z.string()
-    //     .regex(/^5\d{2} \d{3} \d{2} \d{2}$/, "Phone number must be in the format: 5XX XXX XX XX"),
 });
 
 export default function EntryForm() {
@@ -62,26 +44,23 @@ export default function EntryForm() {
             licensePlateNumber: "",
             licenseSerialNumber: "",
             trIdOrTaxNumber: "",
-            // dob: new Date(),
-            // isDisabilityCar: false,
-            // phoneNumber: "",
         },
     });
 
     const { setData } = useTrafficInfoStore();
-    const { setResponses } = useTrafficQueryStore();
-    const [loading, setLoading] = useState(false);
+    const { setResponses, setLoading, setLoadingStarted } = useTrafficQueryStore();
+    const [loading, setLoadingLocal] = useState(false);
 
     const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
         toast("Fetching Offers");
-        setLoading(true);
+        setLoadingStarted(true);
+
         const requestData = {
             Calisilanfirma: "6cc33e04-badc-4a24-adab-75802596cce0",
             Calisilansube: "a82d67ae-596d-40e8-8077-0accd3dbcd88",
             Calisilanuser: "9119293f-6357-48e3-bb69-088df2837221",
             IsYK: false,
 
-            // User Inputs
             NationalNumber: formData.trIdOrTaxNumber,
             LicensePlateNumber: formData.licensePlateNumber,
             LicensePermitNumber: formData.licenseSerialNumber,
@@ -101,7 +80,7 @@ export default function EntryForm() {
 
         async function fetchOffersWithRetry(guid: string, retries = 5, delay = 10000) {
             for (let i = 0; i < retries; i++) {
-                const response = await fetch("http://localhost:4040/getOffers", {
+                const response = await fetch("http://188.132.135.5:4040/get/offers", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -117,7 +96,7 @@ export default function EntryForm() {
                     await new Promise((resolve) => setTimeout(resolve, delay));
                 } else {
                     setResponses(body.data);
-                    return; // Exit function on success
+                    return;
                 }
             }
 
@@ -125,7 +104,7 @@ export default function EntryForm() {
         }
 
         try {
-            const response = await fetch("http://localhost:4040/getTrafficInfo", {
+            const response = await fetch("http://188.132.135.5:4040/get/vehicleInfo", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -134,16 +113,16 @@ export default function EntryForm() {
             });
 
             const result = await response.json();
-            console.log(result)
+            if (!response.ok) {
+                toast(result.message);
+                return;
+            }
             setData(result.data);
             await startOfferProcess(result.data);
-            fetchOffersWithRetry(result.data.HeaderGuid, 10);
-        } catch (error : any) {
-            toast("Error");
-            console.log(error);
-            setLoading(false);
+            await fetchOffersWithRetry(result.data.HeaderGuid, 10);
+            setLoading(true);
         } finally {
-            setLoading(false);
+            setLoadingLocal(false);
         }
     };
 
@@ -153,9 +132,6 @@ export default function EntryForm() {
                 <LicensePlateInput form={form} />
                 <LicenseSerialNumberInput form={form} />
                 <IdNumberInput form={form} />
-                {/* <BrithdayInput form={form} /> */}
-                {/* <DisabilityInput form={form} /> */}
-                {/* <PhoneNumberInput form={form} /> */}
                 <Button type="submit" disabled={loading}>
                     {
                         loading ?
@@ -173,32 +149,18 @@ export default function EntryForm() {
 
 const LicensePlateInput = ({ form }: { form: UseFormReturn<FormValues> }) => {
     const t = useTranslations("form");
-    const [isValid, setIsValid] = useState(true);
 
     return (
         <FormField
             control={form.control}
             name="licensePlateNumber"
             render={({ field }) => {
-
-                const handlePlateIsValid = async () => { }
-
                 return (
                     <FormItem>
                         <FormLabel>{t("license_number.label")}</FormLabel>
                         <FormControl>
                             <div className="flex gap-2 items-center justify-center">
                                 <Input placeholder="12 ABC345" {...field} />
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button size={'sm'} onClick={handlePlateIsValid}><SearchCheckIcon /></Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent>
-                                        {
-                                            isValid ? "The plate is valid" : "The plate is invalid"
-                                        }
-                                    </PopoverContent>
-                                </Popover>
                             </div>
                         </FormControl>
                         <FormMessage />

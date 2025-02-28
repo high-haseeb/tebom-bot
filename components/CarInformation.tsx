@@ -53,39 +53,57 @@ const TrafficInfoDisplay: React.FC = () => {
     {/* <div><LoaderIcon className="animate-spin" /></div> */ }
 
     return (
-        <div className="flex flex-col">
-            <Card>
+        <div className="flex flex-col w-full gap-2">
+            <Card className="">
                 <CardHeader>
-                    <CardTitle>Vehicle Information</CardTitle>
+                    <CardTitle>Araç Bilgileri</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex">
-                        <img src={`https://portal.acente365.com/Images/CarBrand/${data.BrandCode}.png`} width={150}/>
+                    <div className="flex items-start">
+                        <img src={`https://portal.acente365.com/Images/CarBrand/${data.BrandCode}.png`} width={100} />
                         <div className="flex flex-col">
-                            <p><strong>Brand:</strong> {data.BrandName} ({data.BrandCode})</p>
-                            <p><strong>Model:</strong> {data.ModelName} ({data.ModelYear})</p>
-                            <p><strong>License Plate:</strong> {data.LicensePlateNumber}</p>
-                            <p><strong>Fuel Type:</strong> {data.FuelTypeName}</p>
-                            <p><strong>Color:</strong> {data.ColorName}</p>
+                            <div className="font-semibold text-lg">{data.BrandName}</div>
+                            <div className="font-semibold text-base">{data.ModelName}</div>
+                            <div className="font-semibold text-sm text-secondary-foreground">{data.LicensePlateNumber} {data.ModelYear}</div>
+                            <div className="font-light">{data.ColorName} {data.FuelTypeName}</div>
                         </div>
                     </div>
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader>
-                    <CardTitle>Owner Information</CardTitle>
+                    <CardTitle>Araç Sahibi Bilgileri</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <p><strong>Name:</strong> {data.CustomerName} {data.CustomerSurname}</p>
-                    <p><strong>National ID:</strong> {data.NationalNumber}</p>
-                    <p><strong>Birth Date:</strong> {new Date(data.BirthDate).toLocaleDateString()}</p>
-                    <p><strong>Traffic Registration:</strong> {new Date(data.TrafficRegistrationDate).toLocaleDateString()}</p>
-                    <p><strong>Policy Start:</strong> {new Date(data.PolicyStartDate).toLocaleDateString()}</p>
-                    <p><strong>Policy End:</strong> {new Date(data.PolicyEndDate).toLocaleDateString()}</p>
+                <CardContent className="flex flex-col gap-2">
+                    <div className="font-semibold text-xl leading-tight lowercase first-letter:uppercase">{data.CustomerName} {data.CustomerSurname}
+                        <div className="font-normal text-sm">{data.NationalNumber}</div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                        <DateCard title="Doğum Yılı" date={data.BirthDate} />
+                        <DateCard title="Trafiğe Çıkış" date={data.TrafficRegistrationDate} />
+                        <DateCard title="Poliçe Başlangıç" date={data.PolicyStartDate} />
+                        <DateCard title="poliçe bitiş" date={data.PolicyEndDate} />
+                    </div>
                 </CardContent>
             </Card>
         </div>
     );
 };
+
+const DateCard = ({ title, date }: { title: string; date: string }) => {
+    return (
+        <div className="flex flex-col p-2 border rounded-lg">
+            <div className="leading-tight font-semibold">{
+                new Date(date).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                })
+            }
+            </div>
+            <div className="text-sm">{title}</div>
+        </div>
+    )
+}
 
 export default TrafficInfoDisplay;
