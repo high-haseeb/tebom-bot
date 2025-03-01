@@ -64,10 +64,10 @@ export default function EntryForm() {
             NationalNumber: formData.trIdOrTaxNumber,
             LicensePlateNumber: formData.licensePlateNumber,
             LicensePermitNumber: formData.licenseSerialNumber,
-            Phone: "5365099840",
+            Phone: "505 365 09 98",
             IsDisabled: false,
 
-            EMail: "haseebkhalidoriginal@gmail.com",
+            EMail: "abcd123@gmail.com",
             HaveLicensePermitNumber: true,
             IsSorgu: false,
             ProfessionCode: 18,
