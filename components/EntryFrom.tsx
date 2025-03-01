@@ -18,7 +18,7 @@ import {
 import { useState } from "react";
 import { useTrafficInfoStore } from "./CarInformation";
 import { useTrafficQueryStore } from "@/stores/trafficStore";
-import { startOfferProcess } from "@/api/getInfo";
+import { GetServerBaseAddress, startOfferProcess } from "@/api/getInfo";
 import { toast } from "sonner";
 
 type FormValues = {
@@ -64,10 +64,10 @@ export default function EntryForm() {
             NationalNumber: formData.trIdOrTaxNumber,
             LicensePlateNumber: formData.licensePlateNumber,
             LicensePermitNumber: formData.licenseSerialNumber,
-            Phone: "505 365 09 98",
+            Phone: "5365099840",
             IsDisabled: false,
 
-            EMail: "abcd123@gmail.com",
+            EMail: "haseebkhalidoriginal@gmail.com",
             HaveLicensePermitNumber: true,
             IsSorgu: false,
             ProfessionCode: 18,
@@ -80,7 +80,8 @@ export default function EntryForm() {
 
         async function fetchOffersWithRetry(guid: string, retries = 5, delay = 10000) {
             for (let i = 0; i < retries; i++) {
-                const response = await fetch("http://188.132.135.5:4040/get/offers", {
+                console.log("try", i);
+                const response = await fetch(`${GetServerBaseAddress()}/get/offers`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -104,7 +105,7 @@ export default function EntryForm() {
         }
 
         try {
-            const response = await fetch("http://188.132.135.5:4040/get/vehicleInfo", {
+            const response = await fetch(`${GetServerBaseAddress()}/get/vehicleInfo`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -119,6 +120,7 @@ export default function EntryForm() {
             }
             setData(result.data);
             await startOfferProcess(result.data);
+
             await fetchOffersWithRetry(result.data.HeaderGuid, 10);
             setLoading(true);
         } finally {

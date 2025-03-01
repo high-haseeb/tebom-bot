@@ -1,5 +1,11 @@
 import { TrafficInfo } from "@/components/CarInformation";
 
+const isLocal = true;
+export function GetServerBaseAddress() {
+    if (isLocal) return "http://localhost:4040";
+    else return "http://188.132.135.5:4040";
+}
+
 export const startOfferProcess = async (data: TrafficInfo) => {
     const body = {
         BrandCodeFull: `${data.BrandCode}${data.ModelCode}`,
@@ -18,7 +24,7 @@ export const startOfferProcess = async (data: TrafficInfo) => {
     console.log(body)
 
     try {
-        const response = await fetch("http://188.132.135.5:4040/startOffers", {
+        const response = await fetch(`${GetServerBaseAddress()}/startOffers`, {
             method: "POST",
             body: JSON.stringify(body)
         });
@@ -48,7 +54,7 @@ type TrafficInformation = {
 }
 
 export const getTrafficInformation = async () => {
-    const url = "http://188.132.135.5:4040/get/vehicleInfo";
+    const url = `${GetServerBaseAddress()}/get/vehicleInfo`;
     const requestData = {
         Calisilanfirma: "6cc33e04-badc-4a24-adab-75802596cce0",
         Calisilansube: "a82d67ae-596d-40e8-8077-0accd3dbcd88",
@@ -85,7 +91,7 @@ export const getTrafficInformation = async () => {
 };
 
 export async function getListOffers() {
-    const response = await fetch("http://188.132.135.5:4040/get/offers");
+    const response = await fetch(`${GetServerBaseAddress()}//get/offers`);
     const body = await response.json();
     return body.data;
 }

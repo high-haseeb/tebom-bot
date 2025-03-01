@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { DownloadIcon, LoaderIcon } from 'lucide-react'
 import { toast } from 'sonner'
 import { useTrafficInfoStore } from './CarInformation';
+import { GetServerBaseAddress } from '@/api/getInfo';
 
 const DownloadPDF = () => {
     const [loading, setLoading] = useState(false);
@@ -39,7 +40,7 @@ const DownloadPDF = () => {
             }
 
             console.log(data.HeaderGuid.toString());
-            const response = await fetch("http://188.132.135.5:4040/get/PDF", {
+            const response = await fetch(`${GetServerBaseAddress()}/get/PDF`, {
                 method: "POST",
                 body: JSON.stringify({
                     type: "1",
@@ -49,14 +50,13 @@ const DownloadPDF = () => {
                     groupType: "",
                 })
             });
-            if (!response.ok) {
-                const result = await response.json();
-                toast(result.message);
+            const result = await response.json();
+            if (result.error) {
+                toast(result.error);
                 return;
             }
-            console.log(response)
-            const responseJson = await response.json();
-            downloadPDF(responseJson);
+            console.log(response);
+            downloadPDF(result);
         } finally {
             setLoading(false);
         }
