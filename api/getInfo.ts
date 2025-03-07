@@ -61,13 +61,13 @@ export const getTrafficInformation = async () => {
         Calisilanuser: "9119293f-6357-48e3-bb69-088df2837221",
         IsYK: false,
 
-        /// these are to be taken as input
+        // NOTE: these are the required inputs for the server
         NationalNumber: "13527085382",
         LicensePlateNumber: "81 AES 534",
         LicensePermitNumber: "HM 766679",
         Phone: "505 365 09 98",
         IsDisabled: false,
-        /// 
+        //
 
         EMail: "abcd123@gmail.com",
         HaveLicensePermitNumber: true,
@@ -91,7 +91,7 @@ export const getTrafficInformation = async () => {
 };
 
 export async function getListOffers() {
-    const response = await fetch(`${GetServerBaseAddress()}//get/offers`);
+    const response = await fetch(`${GetServerBaseAddress()}/get/offers`);
     const body = await response.json();
     return body.data;
 }
