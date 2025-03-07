@@ -1,7 +1,8 @@
-# Tebom.net Chatbot
+# Tebom.net Frontend Client
 
-* Made by high-haseeb
+Made using next.js v15 and tailwindcss v4.0
 
-## TODO 23/02/2025
-* copy the whole form
-* display the offers
+> [!WARNING]
+> this is not production ready. Please be careful when using it!
+
+> made by high-house.
