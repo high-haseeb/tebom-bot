@@ -47,12 +47,39 @@ export default function EntryForm() {
         },
     });
 
+    async function fetchOffersWithRetry(guid: string, retries = 5, delay = 10000) {
+        for (let i = 0; i < retries; i++) {
+            console.log("try", i);
+            const response = await fetch(`${GetServerBaseAddress()}/get/offers`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ guid }),
+            });
+
+            const body = await response.json();
+            console.log(body);
+
+            if (body.status === false && body.message.includes("Teklif çalışma süresi henüz bitmemiştir")) {
+                console.log(`Waiting ${delay / 1000} seconds before retrying...`);
+                await new Promise((resolve) => setTimeout(resolve, delay));
+            } else {
+                setResponses(body.data);
+                return;
+            }
+        }
+
+        toast("Max retries reached, request failed.");
+    }
+
+
     const { setData } = useTrafficInfoStore();
-    const { setResponses, setLoading, setLoadingStarted } = useTrafficQueryStore();
-    const [loading, setLoadingLocal] = useState(false);
+    const { setResponses, loading, loadingStarted, setLoading, setLoadingStarted } = useTrafficQueryStore();
+
 
     const onSubmit = async (formData: z.infer<typeof FormSchema>) => {
-        toast("Fetching Offers");
+        toast("Getting Offers");
         setLoadingStarted(true);
 
         const requestData = {
@@ -78,31 +105,6 @@ export default function EntryForm() {
             MortgageeFinancerCode: ""
         };
 
-        async function fetchOffersWithRetry(guid: string, retries = 5, delay = 10000) {
-            for (let i = 0; i < retries; i++) {
-                console.log("try", i);
-                const response = await fetch(`${GetServerBaseAddress()}/get/offers`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ guid }),
-                });
-
-                const body = await response.json();
-                console.log(body);
-
-                if (body.status === false && body.message.includes("Teklif çalışma süresi henüz bitmemiştir")) {
-                    console.log(`Waiting ${delay / 1000} seconds before retrying...`);
-                    await new Promise((resolve) => setTimeout(resolve, delay));
-                } else {
-                    setResponses(body.data);
-                    return;
-                }
-            }
-
-            console.error("Max retries reached, request failed.");
-        }
 
         try {
             const response = await fetch(`${GetServerBaseAddress()}/get/vehicleInfo`, {
@@ -123,8 +125,10 @@ export default function EntryForm() {
 
             await fetchOffersWithRetry(result.data.HeaderGuid, 10);
             setLoading(true);
-        } finally {
-            setLoadingLocal(false);
+        } 
+        catch (e: any) {
+            toast(e.message);
+            setLoading(true);
         }
     };
 
@@ -134,9 +138,9 @@ export default function EntryForm() {
                 <LicensePlateInput form={form} />
                 <LicenseSerialNumberInput form={form} />
                 <IdNumberInput form={form} />
-                <Button type="submit" disabled={loading}>
+                <Button type="submit" disabled={loadingStarted && !loading }>
                     {
-                        loading ?
+                        loadingStarted && !loading ?
                             <LoaderIcon className="animate-spin" />
                             :
                             t("submit")

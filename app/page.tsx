@@ -2,9 +2,6 @@
 import ThemeToggle from "@/components/ThemeChanger";
 import TrafficInfoDisplay from "@/components/CarInformation";
 import MainForm from "@/components/MainForm";
-import { NavigationBar } from "@/components/NavBar";
-import SideMenu from "@/components/SideMenu";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sooner";
 import OfferList from "@/components/OfferList";
 import { GithubIcon } from "lucide-react";
